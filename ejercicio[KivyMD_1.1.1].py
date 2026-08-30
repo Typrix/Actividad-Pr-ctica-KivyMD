@@ -11,6 +11,8 @@ from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.textfield import MDTextField
 from kivymd.uix.label import MDLabel
 from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.button import MDFlatButton
+from kivymd.uix.dialog import MDDialog
 
 class DiagnosticoApp(MDApp):
 
@@ -18,16 +20,41 @@ class DiagnosticoApp(MDApp):
         self.stop()
 
     def save_organization(self, instance):
-        text = self.organization_input.text
+        text = self.organization_input.text.strip()
 
-        data = {
-            "organización": text
-        }
+        if not text:
+            self.show_alert("El campo no puede estar vacío.")
 
-        with open("organization.json", "w", encoding = "utf-8") as f:
-            json.dump(data, f, ensure_ascii = False, indent = 4)
-        print("Text Saved!")
+        else:
+            self.show_alert("Guardado Exitosamente.")
+            data = {
+                "organización": text
+            }
 
+            with open("organization.json", "w", encoding = "utf-8") as f:
+                json.dump(data, f, ensure_ascii = False, indent = 4)
+            print("Text Saved!")
+            self.organization_input.text = ""
+
+
+    def show_alert(self, mensaje):
+
+        self.dialog = MDDialog(
+            title = "Aviso",
+            text = mensaje,
+            size_hint = [0.8, 1],
+            buttons = [
+                MDFlatButton(
+                    text = "Aceptar",
+                    on_release = self.close_dialog
+                )
+            ]
+        )
+        self.dialog.open()
+
+    def close_dialog(self, instance):
+
+        self.dialog.dismiss()
 
     def build(self):
         # Configuración Material Design
